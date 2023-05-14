@@ -61,15 +61,15 @@ public extension Request {
     }
 
     enum RequestError: Error {
-        case decode
+        case decode(DecodingError? = nil)
         case noResponse
         case unauthorized
         case unexpectedStatusCode
 
         var customMessage: String {
             switch self {
-            case .decode:
-                return "Decode error"
+            case .decode(let underlyingError):
+                return "Decode error: \(String(describing: underlyingError))"
             case .unauthorized:
                 return "Session expired"
             default:

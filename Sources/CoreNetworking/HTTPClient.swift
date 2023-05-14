@@ -22,13 +22,20 @@ public class HTTPClient {
         }
         switch response.statusCode {
         case 200...299:
-            guard let decodedResponse = try? jsonDecoder.decode(
-                responseType,
-                from: data
-            ) else {
-                throw Request.RequestError.decode
+            do {
+                let decodedResponse = try jsonDecoder.decode(
+                    responseType,
+                    from: data
+                )
+                
+                return decodedResponse
+            } catch {
+                guard let decodingError = error as? DecodingError else {
+                    throw Request.RequestError.decode()
+                }
+                
+                throw Request.RequestError.decode(decodingError)
             }
-            return decodedResponse
         case 401:
             throw Request.RequestError.unauthorized
         default:
