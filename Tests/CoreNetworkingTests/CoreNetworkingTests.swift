@@ -36,8 +36,17 @@ final class CoreNetworkingTests: XCTestCase {
         do {
             _ = try await service.fetchCatFact()
             XCTFail("Should have thrown")
+        } catch let Request.RequestError.decode(DecodingError.keyNotFound(key, context)?) {
+            XCTAssertEqual(key.intValue, nil)
+            XCTAssertEqual(key.stringValue, "fact")
+            XCTAssertEqual(context.codingPath.count, 0)
+            XCTAssertEqual(
+                context.debugDescription,
+                "No value associated with key CodingKeys(stringValue: \"fact\", intValue: nil) (\"fact\")."
+            )
+            XCTAssertNil(context.underlyingError)
         } catch {
-            XCTAssertEqual(error as? Request.RequestError, .decode)
+            XCTFail("Should have thrown RequestError.decode error")
         }
     }
 }
