@@ -2,6 +2,8 @@ import Foundation
 
 /// Request object.
 public struct Request {
+    /// A random string identifier to quickly identify the request/response combo.
+    let internalId: String = "[\(UUID().uuidString.prefix(5))]"
     private let urlString: String
     private let method: HttpMethod
     private var headers: [String: String]
@@ -40,6 +42,22 @@ public struct Request {
         request.allHTTPHeaderFields = headers
         request.httpMethod = method.name
         return request
+    }
+
+    var logProperties: [String: Any] {
+        var logProperties: [String: Any] = [:]
+        logProperties["Request's Internal Id"] = internalId
+        if let url = urlRequest.url {
+            logProperties["URL"] = url.absoluteString
+        }
+        logProperties["HTTP Method"] = urlRequest.httpMethod
+        if let headers = urlRequest.allHTTPHeaderFields, headers.count > 0 {
+            logProperties["HTTP Headers"] = headers
+        }
+        if let body = urlRequest.httpBody {
+            logProperties["HTTP Body"] = String(data: body, encoding: .utf8)
+        }
+        return logProperties
     }
 }
 

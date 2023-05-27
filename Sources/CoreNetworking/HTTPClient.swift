@@ -6,26 +6,33 @@ public class HTTPClient {
     public static let shared = HTTPClient()
     /// Replace the default JSONDecoder if necessary.
     public var jsonDecoder: JSONDecoder = JSONDecoder()
-    /// Determines if the HTTPClient will log information about the responses to the console.
-    public var logResponses: Bool = true
-    /// Console logger for successful decodes.
-    private lazy var decodingSuccessLogger = DecodingSuccessLogger()
-    /// Console logger for decoding issues.
-    private lazy var decodingErrorLogger = DecodingErrorLogger(jsonDecoder: jsonDecoder)
+    /// The console logger object. Replace this logger if you need a different verbose level.
+    /// By default, the object will log requests and responses information to the console.
+    public var networkLogger = NetworkLogger(
+        configuration: .verbose(
+            logRequests: true,
+            logResponses: true
+        )
+    )
 
     /// Executes a request asynchronously and returns a response, or throws an error.
     public func execute<Response: Decodable>(
         _ request: Request,
         responseType: Response.Type
     ) async throws -> Response {
+        defer { networkLogger.logRequestFinished() }
+
         let (data, response) = try await URLSession.shared.data(
             for: request.urlRequest,
             delegate: nil
         )
+        networkLogger.logRequest(request)
 
         guard let response = response as? HTTPURLResponse else {
             throw Request.RequestError.noResponse
         }
+        networkLogger.logResponse(response, request: request)
+
         switch response.statusCode {
         case 200...299:
             do {
@@ -34,15 +41,18 @@ public class HTTPClient {
                     from: data
                 )
 
-                if logResponses {
-                    decodingSuccessLogger.logInfo(model: decodedResponse, data: data)
-                }
-                
+                networkLogger.logDecodingSuccessResponse(
+                    model: decodedResponse,
+                    for: responseType,
+                    data: data
+                )
                 return decodedResponse
             } catch {
-                if logResponses {
-                    decodingErrorLogger.logAdditionalDecodingFailureInfo(with: error, for: responseType)
-                }
+                networkLogger.logDecodingErrorResponse(
+                    with: error,
+                    for: responseType,
+                    data: data
+                )
 
                 guard let decodingError = error as? DecodingError else {
                     throw Request.RequestError.decode()
