@@ -30,37 +30,36 @@ HTTPClient.shared.networkLogger = .init(
 🛜 ===> Network Request started:
 ▿ 3 key/value pairs
   ▿ (2 elements)
+    - key: "Request\'s Internal Id"
+    - value: "[CA5C3]"
+  ▿ (2 elements)
     - key: "URL"
     - value: "https://catfact.ninja/fact/?"
   ▿ (2 elements)
     - key: "HTTP Method"
     - value: "GET"
-  ▿ (2 elements)
-    - key: "Request\'s Internal Id"
-    - value: "[3E786]"
 🛜 <==== Network Response received:
 ▿ 3 key/value pairs
   ▿ (2 elements)
+    - key: "Status Code"
+    - value: "200"
+  ▿ (2 elements)
     - key: "Request\'s Internal Id"
-    - value: "[3E786]"
+    - value: "[CA5C3]"
   ▿ (2 elements)
     - key: "URL"
     - value: "https://catfact.ninja/fact/?"
-  ▿ (2 elements)
-    - key: "Status Code"
-    - value: "200"
 ✅ ==> JSON Decoding start:
 ▿ CoreNetworkingTests.CatFact
-  - fact: "A cat\'s brain is more similar to a man\'s brain than that of a dog."
-  - length: 66
+  - fact: "Cats are now Britain\'s favourite pet: there are 7.7 million cats as opposed to 6.6 million dogs."
+  - length: 96
 ℹ️ Additional Info:
-▿ 2 key/value pairs
-  ▿ (2 elements)
-    - key: "Expected Model"
-    - value: "CatFact"
-  ▿ (2 elements)
-    - key: "UTF8 - String"
-    - value: "{\"fact\":\"A cat\'s brain is more similar to a man\'s brain than that of a dog.\",\"length\":66}"
+ℹ️ 🔍 Expected Model: CatFact
+ℹ️ 📝 Pretty Printed JSON:
+{
+  "fact" : "Cats are now Britain's favourite pet: there are 7.7 million cats as opposed to 6.6 million dogs.",
+  "length" : 96
+}
 ✅ <== JSON Decoding end.
 🏁 <==== Network Request finished.
 ```
@@ -71,11 +70,11 @@ HTTPClient.shared.networkLogger = .init(
 🛜 ===> Network Request started:
 ▿ 3 key/value pairs
   ▿ (2 elements)
-    - key: "Request\'s Internal Id"
-    - value: "[1C57E]"
-  ▿ (2 elements)
     - key: "HTTP Method"
     - value: "GET"
+  ▿ (2 elements)
+    - key: "Request\'s Internal Id"
+    - value: "[79B5E]"
   ▿ (2 elements)
     - key: "URL"
     - value: "https://catfact.ninja/facts/?"
@@ -83,23 +82,32 @@ HTTPClient.shared.networkLogger = .init(
 ▿ 3 key/value pairs
   ▿ (2 elements)
     - key: "Request\'s Internal Id"
-    - value: "[1C57E]"
-  ▿ (2 elements)
-    - key: "URL"
-    - value: "https://catfact.ninja/facts/?"
+    - value: "[79B5E]"
   ▿ (2 elements)
     - key: "Status Code"
     - value: "200"
+  ▿ (2 elements)
+    - key: "URL"
+    - value: "https://catfact.ninja/facts/?"
 ❌ ==> JSON Decoding issue start:
 Error description: Key 'CodingKeys(stringValue: "fact", intValue: nil)' not found
 ℹ️ Additional Info:
-▿ 3 key/value pairs
-  ▿ (2 elements)
-    - key: "UTF8 - String"
-    - value: "{\"current_page\":1,\"data\":[{\"fact\":\"Unlike dogs, cats do not have a sweet tooth. Scientists believe this is due to a mutation in a key taste receptor.\",\"length\":114},{\"fact\":\"-}"
-  ▿ (2 elements)
-    - key: "Expected Model"
-    - value: "CatFact"
+ℹ️ 🔍 Expected Model: CatFact
+ℹ️ 📝 Pretty Printed JSON:
+{
+  "last_page_url" : "https:\/\/catfact.ninja\/facts?page=34",
+  "prev_page_url" : null,
+  "from" : 1,
+  "total" : 332,
+  "path" : "https:\/\/catfact.ninja\/facts",
+  "first_page_url" : "https:\/\/catfact.ninja\/facts?page=1",
+  "last_page" : 34,
+  "next_page_url" : "https:\/\/catfact.ninja\/facts?page=2",
+  "current_page" : 1,
+  "per_page" : 10,
+  "to" : 10
+}
+▿ 1 key/value pair
   ▿ (2 elements)
     - key: "Context"
     - value: "No value associated with key CodingKeys(stringValue: \"fact\", intValue: nil) (\"fact\")."

@@ -58,14 +58,13 @@ public struct NetworkLogger {
         switch configuration {
         case let .verbose(_, logResponses):
             guard logResponses else { return }
-            var logProperties: [String: String] = [:]
-            logProperties["UTF8 - String"] = String(data: data, encoding: .utf8)
-            logProperties["Expected Model"] = "\(type)"
 
             print("✅ ==> JSON Decoding start:")
             dump(model)
             print("ℹ️ Additional Info:")
-            dump(logProperties)
+            print("ℹ️ 🔍 Expected Model: \(type)")
+            print("ℹ️ 📝 Pretty Printed JSON:")
+            print(data.prettyPrintedJSONString)
             print("✅ <== JSON Decoding end.")
         case .quiet:
             return
@@ -78,8 +77,6 @@ public struct NetworkLogger {
             guard logResponses else { return }
             var errorDescription: String = ""
             var logProperties: [String: String] = [:]
-            logProperties["UTF8 - String"] = String(data: data, encoding: .utf8)
-            logProperties["Expected Model"] = "\(type)"
 
             if let decodingError = error as? DecodingError {
                 switch decodingError {
@@ -108,6 +105,9 @@ public struct NetworkLogger {
             print("❌ ==> JSON Decoding issue start:")
             print("Error description: \(errorDescription)")
             print("ℹ️ Additional Info:")
+            print("ℹ️ 🔍 Expected Model: \(type)")
+            print("ℹ️ 📝 Pretty Printed JSON:")
+            print(data.prettyPrintedJSONString)
             dump(logProperties)
             print("❌ <== JSON Decoding issue end.")
         case .quiet:
