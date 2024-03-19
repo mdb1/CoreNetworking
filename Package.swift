@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CoreNetworking",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v16),
         .macOS(.v12)
     ],
     products: [
