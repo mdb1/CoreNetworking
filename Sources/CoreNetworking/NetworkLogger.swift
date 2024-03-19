@@ -29,8 +29,10 @@ public struct NetworkLogger {
         case let .verbose(logRequests, _):
             guard logRequests else { return }
 
-            print("🛜 ===> Network Request started:")
-            dump(request.logProperties)
+            Current.logger.debug("""
+            🛜 ===> Network Request started:
+            \(request.logProperties.toJSONData()?.prettyPrintedJSONString)
+            """)
         case .quiet:
             return
         }
@@ -40,14 +42,16 @@ public struct NetworkLogger {
         switch configuration {
         case let .verbose(_, logResponses):
             guard logResponses else { return }
-
-            print("🛜 <==== Network Response received:")
             var logProperties: [String: Any] = [:]
             logProperties["Request's Internal Id"] = request.internalId
             logProperties.merge(response.logProperties) { _, new in
                 new
             }
-            dump(logProperties)
+
+            Current.logger.debug("""
+            🛜 <==== Network Response received:"
+            \(logProperties.toJSONData()?.prettyPrintedJSONString)
+            """)
 
         case .quiet:
             return
@@ -59,13 +63,12 @@ public struct NetworkLogger {
         case let .verbose(_, logResponses):
             guard logResponses else { return }
 
-            print("✅ ==> JSON Decoding start:")
-            dump(model)
-            print("ℹ️ Additional Info:")
-            print("ℹ️ 🔍 Expected Model: \(type)")
-            print("ℹ️ 📝 Pretty Printed JSON:")
-            print(data.prettyPrintedJSONString)
-            print("✅ <== JSON Decoding end.")
+            Current.logger.debug("""
+            ✅ ==> JSON Decoding Success:
+            ℹ️ 🔍 Expected Model: \(type)
+            ℹ️ 📝 Pretty Printed JSON:
+            \(data.prettyPrintedJSONString)
+            """)
         case .quiet:
             return
         }
@@ -76,7 +79,7 @@ public struct NetworkLogger {
         case let .verbose(_, logResponses):
             guard logResponses else { return }
             var errorDescription: String = ""
-            var logProperties: [String: String] = [:]
+            var logProperties: [String: Any] = [:]
 
             if let decodingError = error as? DecodingError {
                 switch decodingError {
@@ -102,26 +105,15 @@ public struct NetworkLogger {
                 }
             }
 
-            print("❌ ==> JSON Decoding issue start:")
-            print("Error description: \(errorDescription)")
-            print("ℹ️ Additional Info:")
-            print("ℹ️ 🔍 Expected Model: \(type)")
-            print("ℹ️ 📝 Pretty Printed JSON:")
-            print(data.prettyPrintedJSONString)
-            dump(logProperties)
-            print("❌ <== JSON Decoding issue end.")
-        case .quiet:
-            return
-        }
-    }
-
-    func logRequestFinished() {
-        switch configuration {
-        case let .verbose(_, logResponses):
-            guard logResponses else { return }
-            
-            print("🏁 <==== Network Request finished.")
-            print("")
+            Current.logger.error("""
+            ❌ ==> JSON Decoding issue:
+            Error description: \(errorDescription)
+            ℹ️ 🔍 Expected Model: \(type)
+            ℹ️ 📝 Pretty Printed JSON:
+            \(data.prettyPrintedJSONString)
+            ℹ️ 📝 Underlying decoding issue:
+            \(logProperties.toJSONData()?.prettyPrintedJSONString)
+            """)
         case .quiet:
             return
         }
@@ -132,7 +124,7 @@ private extension NetworkLogger {
     /// Add Decoding Error context information to the dictionary.
     func addContext(
         _ context: DecodingError.Context,
-        logProperties: inout [String: String]
+        logProperties: inout [String: Any]
     ) {
         logProperties["Context"] = context.debugDescription
         if context.codingPath.count > 0 {

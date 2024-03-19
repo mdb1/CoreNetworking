@@ -20,13 +20,11 @@ public class HTTPClient {
         _ request: Request,
         responseType: Response.Type
     ) async throws -> Response {
-        defer { networkLogger.logRequestFinished() }
-
+        networkLogger.logRequest(request)
         let (data, response) = try await URLSession.shared.data(
             for: request.urlRequest,
             delegate: nil
         )
-        networkLogger.logRequest(request)
 
         guard let response = response as? HTTPURLResponse else {
             throw Request.RequestError.noResponse
