@@ -49,7 +49,7 @@ public struct NetworkLogger {
             }
 
             Current.logger.debug("""
-            🛜 <==== Network Response received:"
+            🛜 <==== Network Response received:
             \(logProperties.toJSONData()?.prettyPrintedJSONString)
             """)
 
